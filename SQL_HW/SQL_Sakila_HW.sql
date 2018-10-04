@@ -63,24 +63,44 @@ AND last_name = 'WILLIAMS';
 
 -- 4d. Perhaps we were too hasty in changing `GROUCHO` to `HARPO`. It turns out that `GROUCHO` was the correct name after all! In a single query, if the first name of the actor is currently `HARPO`, change it to `GROUCHO`.
 UPDATE actor
-SET    first_name = 'GROUCHO'
-WHERE  first_name = 'HARPO'
-AND    last_name  = 'WILLIAMS';
+SET first_name = 'GROUCHO'
+WHERE first_name = 'HARPO'
+AND last_name  = 'WILLIAMS';
 
 -- 5a. You cannot locate the schema of the `address` table. Which query would you use to re-create it?
 SHOW CREATE TABLE address;
 
 -- 6a. Use `JOIN` to display the first and last names, as well as the address, of each staff member. Use the tables `staff` and `address`:
-
-
+SELECT first_name, last_name, address.address
+FROM staff
+JOIN address ON address.address_id=staff.address_id;
 
 -- 6b. Use `JOIN` to display the total amount rung up by each staff member in August of 2005. Use tables `staff` and `payment`.
+SELECT staff.staff_id, first_name, last_name, sum(amount)
+FROM payment
+JOIN staff ON payment.staff_id=staff.staff_id
+WHERE payment_date LIKE '2005-08%'
+GROUP BY first_name, last_name, staff_id;
 
 -- 6c. List each film and the number of actors who are listed for that film. Use tables `film_actor` and `film`. Use inner join.
+SELECT title, count(actor_id)
+FROM film
+INNER JOIN film_actor ON film.film_id=film_actor.film_id
+GROUP BY title;
 
 -- 6d. How many copies of the film `Hunchback Impossible` exist in the inventory system?
+SELECT title, count(inventory_id) 
+AS 'Number of copies'
+FROM film
+INNER JOIN inventory ON film.film_id=inventory.film_id
+WHERE title = 'Hunchback Impossible';
 
 -- 6e. Using the tables `payment` and `customer` and the `JOIN` command, list the total paid by each customer. List the customers alphabetically by last name:
+SELECT first_name, last_name, sum(amount)
+FROM customer
+JOIN payment ON customer.customer_id=payment.customer_id
+GROUP BY payment.customer_id
+ORDER BY last_name;
 
 -- 7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters `K` and `Q` have also soared in popularity. Use subqueries to display the titles of movies starting with the letters `K` and `Q` whose language is English.
 
