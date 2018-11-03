@@ -34,7 +34,7 @@ def scrape():
 
     html = browser.html
     soup = bs(html, 'html.parser')
-
+    
     browser.click_link_by_partial_text('FULL IMAGE')
     browser.click_link_by_partial_text('more info')
 
@@ -47,6 +47,7 @@ def scrape():
     print(featured_img_url)
 
     mars_dict['featured_img_url'] = featured_img_url
+
 
     # Mars Weather Tweet Text
 
@@ -68,7 +69,7 @@ def scrape():
 
     mars_dict['twitter_text'] = twitter_text
 
-    # ## Mars Facts Table 
+    # Mars Facts Table 
 
     facts_url = "http://space-facts.com/mars/"
     facts_table = pd.read_html(facts_url)
