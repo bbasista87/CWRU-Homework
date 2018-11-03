@@ -1,0 +1,12 @@
+h1 {
+    text-align: center;
+    color: white;
+}
+
+.main-btn {
+    text-align: center;
+}
+
+.jumbotron {
+    background-image: url(https://svs.gsfc.nasa.gov/vis/a010000/a012200/a012266/Mars_Wet_LPI_16x9.jpg)
+}
