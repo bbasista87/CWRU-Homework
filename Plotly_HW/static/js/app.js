@@ -1,73 +1,98 @@
 function buildMetadata(sample) {
-
-  // @TODO: Complete the following function that builds the metadata panel
-  var url = '/metadata/' + sample;
-  console.log("sample", sample)
-
-  // Use `d3.json` to fetch the metadata for a sample
-  d3.json(url).then(function (data) {
-    // Use d3 to select the panel with id of `#sample-metadata`
-    var selector = d3.select("#sample-metadata");
-
-    // Use `.html("") to clear any existing metadata
-    selector.html("");
-
-    // Use `Object.entries` to add each key and value pair to the panel
-    // Hint: Inside the loop, you will need to use d3 to append new
-    // tags for each key-value in the metadata.
-     Object.entries(data).forEach(([key, value]) => {
-      selector.append("h4").text(`${key}: ${value}`);
-    });
-  });
-}
-
-  // BONUS: Build the Gauge Chart
-  // buildGauge(data.WFREQ);
+  // Using `d3.json` to fetch the metadata for a sample
+  // console.log(sample)
+  d3.json(`/metadata/${sample}`).then(function(sampleData) {
+    console.log(sampleData);
+    
+    // Using d3 to select the panel with id of `#sample-metadata`
+    var PANEL = d3.select("#sample-metadata");
+    
+    // Using `.html("") to clear any existing metadata
+    PANEL.html("");
+    
+    // Using `Object.entries` to add each key and value pair to the panel
+    // Using d3 to append new tags for each key-value in the metadata.
+    Object.entries(sampleData).forEach(([key, value]) => {
+      PANEL.append('h6').text(`${key}, ${value}`);
+    })
+    
+    // BONUS: Build the Gauge Chart
+    // buildGauge(data.WFREQ);
+    
+    
+      
+    })
+  }
   
   function buildCharts(sample) {
-
-  // @TODO: Use `d3.json` to fetch the sample data for the plots
-  var url = '/samples/' + sample;
-  console.log("Url", url);
-
-  // @TODO: Build a Bubble Chart using the sample data
-  d3.json(url).then(function (data) {
-    console.log("data", data);
-
+    
+    // @TODO: Use `d3.json` to fetch the sample data for the plots
+    
+    // @TODO: Build a Bubble Chart using the sample data
+    
     // @TODO: Build a Pie Chart
-    var layout = {
-      title: "Bacterial Samples"
-    };
-
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
-    var bac = [{
-      values: data.sample_values.slice(0, 11),
-      labels: data.otu_ids.slice(0, 11),
-      type: "pie"
-    }];
-        
-    Plotly.newPlot("pie", bac, layout);
-
-    var trace = [{
-      x: data.otu_ids,
-      y: data.sample_values,
-      text: data.otu_labels,
-      mode: 'markers',
-      marker: {
-        size: data.sample_values,
-        color: data.otu_ids
-      }
-    }];
-    var layout2 = {
-      title: "Bacterial Bubble Chart",
-      showlegend: false
-    };
-    Plotly.newPlot("bubble", trace, layout2);
-
-  });
     
-}
+    // console.log(sample)  
+    d3.json(`/samples/${sample}`).then(function (sampleData) {
+      console.log(sampleData);
+      // console.log(sampleData.otu_ids);
+      // console.log(sampleData.otu_labels);
+      // console.log(sampleData.sample_values);
+
+      const otu_ids = sampleData.otu_ids;
+      const otu_labels = sampleData.otu_labels;
+      const sample_values = sampleData.sample_values;
+
+      //Building Bubble chart
+      var bubbleData = [{
+        x: otu_ids,
+        y: sample_values,
+        text: otu_labels,
+        mode: 'markers',
+        marker: {
+          size: sample_values,
+          color: otu_ids,
+          colorscale: 'Earth'
+        }
+      }];      
+
+      var bubbleLayout = {
+        margin: { t: 0 },
+        hovermode: 'closest',
+        xaxis: {title: 'OTU ID'},
+      };
+
+      Plotly.plot('bubble', bubbleData, bubbleLayout);
+
+      // Building Pie Chart
+      var pieData = [{
+        values: sample_values.slice(0,10),
+        labels: otu_ids.slice(0,10),
+        hovertext: otu_labels.slice(0,10,),
+        hoverinfo: 'hovertext',
+        type: 'pie'
+      }];
+
+      var pieLayout = {
+        margin: {t: 0, l: 0}
+      }
+
+      Plotly.plot('pie', pieData, pieLayout); 
+
+    });
+  }
+  
+  
+  // const defaultURL = "/metadata/<sample>";
+  // d3.json(defaultURL).then(function (data) {
+  //   var data = [data];
+  //   var layout = { margin: { t: 30, b: 100 } };
+  //   Plotly.plot("bar", data, layout);
+  // });
+  
+
 
 function init() {
   // Grab a reference to the dropdown select element
